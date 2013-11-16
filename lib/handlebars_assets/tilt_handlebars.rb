@@ -10,10 +10,18 @@ module HandlebarsAssets
       heredoc.gsub /^#{heredoc[/\A\s*/]}/, ''
     end
   end
+  
+  module Strip
+    #Strip all whitespace and new lines from template (spaceless mode)
+    def strip(str)
+      str.gsub /\ {2,}||\r||\n/, ''
+    end
+  end
 
   class TiltHandlebars < Tilt::Template
 
     include Unindent
+    include Strip
 
     def self.default_mime_type
       'application/javascript'
@@ -61,7 +69,7 @@ module HandlebarsAssets
     end
 
     def compile_default(source, template_path)
-      compiled_hbs = Handlebars.precompile(source, HandlebarsAssets::Config.options)
+      compiled_hbs = strip(Handlebars.precompile(source, HandlebarsAssets::Config.options))
 
       template_namespace = HandlebarsAssets::Config.template_namespace
 
